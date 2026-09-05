@@ -1,4 +1,4 @@
-# CRM Design System — Style Guide
+# CRM Design System: Style Guide
 
 > Version 1.2 | Last Updated: December 2024
 
@@ -27,11 +27,11 @@ A comprehensive design system reference for building consistent, accessible, and
 
 ## Design Principles
 
-1. **Clarity First** — Every element should serve a purpose. Remove visual clutter.
-2. **Data-Driven** — Prioritize readability of data in tables, lists, and cards.
-3. **Consistent Rhythm** — Use the 8px grid system for all spacing decisions.
-4. **Accessible** — WCAG 2.0 AA compliant color contrast and interactions.
-5. **Theme-Ready** — Semantic tokens enable light/dark mode switching.
+1. **Clarity First**: Every element should serve a purpose. Remove visual clutter.
+2. **Data-Driven**: Prioritize readability of data in tables, lists, and cards.
+3. **Consistent Rhythm**: Use the 8px grid system for all spacing decisions.
+4. **Accessible**: WCAG 2.0 AA compliant color contrast and interactions.
+5. **Theme-Ready**: Semantic tokens enable light/dark mode switching.
 
 ---
 
