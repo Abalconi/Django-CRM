@@ -42,7 +42,8 @@ export default defineConfig({
     // Server modules only. They are plain functions over `apiRequest`, so they
     // need no DOM, and a node environment keeps the run fast.
     environment: 'node',
-    include: ['src/**/*.test.js']
+    include: ['src/**/*.test.js'],
+    maxWorkers: '50%'
   },
   resolve: {
     alias: {
