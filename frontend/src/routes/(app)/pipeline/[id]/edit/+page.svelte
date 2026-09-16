@@ -1,5 +1,6 @@
 <script>
   import { resolve } from '$app/paths';
+  import { OPPORTUNITY_SOURCES } from '$lib/v2/enums.js';
   /**
    * Editing a deal.
    *
@@ -372,7 +373,11 @@
 
     <div class="v2-field">
       <label for="f-source">Source</label>
-      <input id="f-source" name="lead_source" class="v2-input" bind:value={form.lead_source} />
+      <select id="f-source" name="lead_source" class="v2-input" bind:value={form.lead_source}>
+        {#each OPPORTUNITY_SOURCES as [value, label] (value)}
+          <option value={value}>{label}</option>
+        {/each}
+      </select>
     </div>
 
     <div class="v2-field">

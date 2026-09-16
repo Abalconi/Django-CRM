@@ -3,7 +3,12 @@
   import { untrack, tick } from 'svelte';
   import { enhance } from '$app/forms';
   import PageHeader from '$lib/v2/components/PageHeader.svelte';
-  import { STAGES, STAGE_LABEL, OPPORTUNITY_TYPE_LABEL } from '$lib/v2/enums.js';
+  import {
+    STAGES,
+    STAGE_LABEL,
+    OPPORTUNITY_TYPE_LABEL,
+    OPPORTUNITY_SOURCES
+  } from '$lib/v2/enums.js';
   import { money } from '$lib/v2/format.js';
   import { ChevronDown, ChevronRight, TriangleAlert } from '@lucide/svelte';
 
@@ -322,13 +327,16 @@
 
           <div class="v2-field">
             <label for="f-source">Source</label>
-            <input
+            <select
               id="f-source"
               name="lead_source"
               class="v2-input"
               bind:value={form.lead_source}
-              placeholder="Existing customer"
-            />
+            >
+              {#each OPPORTUNITY_SOURCES as [value, label] (value)}
+                <option value={value}>{label}</option>
+              {/each}
+            </select>
           </div>
 
           <div class="v2-field">

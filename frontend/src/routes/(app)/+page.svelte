@@ -4,6 +4,7 @@
   import Pill from '$lib/v2/components/Pill.svelte';
   import { money, count } from '$lib/v2/format.js';
   import { Target } from '@lucide/svelte';
+  import { getLanguage, tr } from '$lib/i18n.js';
 
   /** @type {{ data: any }} */
   let { data } = $props();
@@ -16,6 +17,14 @@
   };
 
   let { queue, summary, later, goals } = $derived(data);
+  let language = $state('es');
+
+  $effect(() => {
+    language = getLanguage();
+    const onLanguage = (event) => (language = event.detail);
+    window.addEventListener('bottlecrm-language', onLanguage);
+    return () => window.removeEventListener('bottlecrm-language', onLanguage);
+  });
 
   /** Revenue goals are money; deals and activities goals are plain counts. */
   const goalValue = (g, n) => (g.goal_type === 'REVENUE' ? money(n, data.org.currency) : count(n));
@@ -34,9 +43,6 @@
           ? 'var(--v2-clay)'
           : 'var(--v2-slate)';
 
-  const plural = (/** @type {number} */ n, /** @type {string} */ one, /** @type {string} */ many) =>
-    `${n} ${n === 1 ? one : many}`;
-
   // Built as one string rather than conditional markup: the "quiet deals"
   // clause only makes sense when there are any, and the numbers are often zero
   // in a real org, so the copy adapts instead of reading "0 deals … have gone
@@ -48,12 +54,13 @@
   // list the sentence had just promised to lead with.
   let subText = $derived(
     summary.count === 0
-      ? 'Nothing needs you right now: you’re all clear for today.'
+      ? tr(language, 'allClearToday')
       : summary.quiet_deals === 0
-        ? `${plural(summary.count, 'thing wants', 'things want')} you today.`
-        : `${plural(summary.count, 'thing wants', 'things want')} you today. ` +
-          `${plural(summary.quiet_deals, 'deal', 'deals')} worth ${money(summary.quiet_value, data.org.currency)} ` +
-          `${summary.quiet_deals === 1 ? 'has' : 'have'} gone quiet.`
+        ? `${summary.count} ${summary.count === 1 ? tr(language, 'thingNeeds') : tr(language, 'thingsNeed')}`
+        : `${summary.count} ${summary.count === 1 ? tr(language, 'thingNeeds') : tr(language, 'thingsNeed')} ` +
+          `${summary.quiet_deals} ${summary.quiet_deals === 1 ? tr(language, 'deal') : tr(language, 'deals')} ` +
+          `${tr(language, 'worth')} ${money(summary.quiet_value, data.org.currency)} ` +
+          `${summary.quiet_deals === 1 ? tr(language, 'hasGoneQuiet') : tr(language, 'haveGoneQuiet')}`
   );
 
   // The queue shows the most urgent 8. Everything past that is real work with
@@ -62,7 +69,7 @@
   let hidden = $derived(Math.max(0, summary.count - summary.shown));
 </script>
 
-<PageHeader title="Today">
+<PageHeader title={tr(language, 'today')}>
   {#snippet sub()}{subText}{/snippet}
 </PageHeader>
 
@@ -96,11 +103,11 @@
     {/each}
 
     {#if queue.length && hidden === 0}
-      <p class="v2-sub" style="margin:15px 0 21px;font-size:12.5px">That’s everything due today.</p>
+      <p class="v2-sub" style="margin:15px 0 21px;font-size:12.5px">{tr(language, 'allDueToday')}</p>
     {:else if queue.length}
       <p class="v2-sub" style="margin:15px 0 21px;font-size:12.5px">
         <span class="v2-num">{hidden}</span>
-        {hidden === 1 ? 'more is' : 'more are'} waiting:
+        {tr(language, hidden === 1 ? 'moreIsWaiting' : 'moreAreWaiting')}
         {#each summary.sources as source, i (source.href)}<a
             href={resolve(source.href)}
             style="color:inherit">{source.count} {source.label}</a
@@ -109,9 +116,9 @@
     {:else}
       <div class="v2-card" style="margin-bottom:8px">
         <div class="v2-pad" style="padding:20px;text-align:center">
-          <div style="font-weight:640;letter-spacing:-0.012em">Inbox zero for today</div>
+          <div style="font-weight:640;letter-spacing:-0.012em">{tr(language, 'inboxZero')}</div>
           <div class="v2-sub" style="margin-top:3px">
-            No overdue tickets, invoices, quiet deals or tasks. Anything coming up is below.
+            {tr(language, 'noOverdue')}
           </div>
         </div>
       </div>
@@ -129,7 +136,7 @@
     {#if goals.length}
       <div class="v2-label" style="margin:6px 0 9px">
         <Target size={12} style="vertical-align:-1px;margin-right:4px" />
-        Where you stand
+        {tr(language, 'whereYouStand')}
       </div>
       <div class="goals">
         {#each goals as g (g.id)}
@@ -152,7 +159,7 @@
     {/if}
 
     {#if later.length}
-      <div class="v2-label" style="margin:6px 0 9px">Later this week</div>
+      <div class="v2-label" style="margin:6px 0 9px">{tr(language, 'laterThisWeek')}</div>
       {#each later as row (row.id)}
         <div
           style="display:flex;gap:13px;align-items:baseline;padding:9px 3px;border-bottom:1px solid var(--v2-line-soft)"
@@ -169,7 +176,7 @@
 
     {#if summary.cleared_yesterday > 0}
       <p class="v2-sub" style="margin-top:20px;font-size:12px">
-        Yesterday you cleared <span class="v2-num">{summary.cleared_yesterday}</span>.
+        {tr(language, 'yesterdayYouCleared')} <span class="v2-num">{summary.cleared_yesterday}</span>.
       </p>
     {/if}
   </div>

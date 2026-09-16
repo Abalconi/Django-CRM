@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       sveltekit()
     ],
     server: {
-      port: 5181,
+      port: 5173,
       strictPort: true
     }
   };

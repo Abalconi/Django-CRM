@@ -58,6 +58,18 @@ export const OPPORTUNITY_TYPE_LABEL = {
   CROSS_SELL: 'Cross-sell'
 };
 
+export const OPPORTUNITY_SOURCES = [
+  ['NONE', 'Sin especificar'],
+  ['CALL', 'Llamada'],
+  ['EMAIL', 'Correo electrónico'],
+  ['EXISTING CUSTOMER', 'Cliente existente'],
+  ['PARTNER', 'Socio'],
+  ['PUBLIC RELATIONS', 'Relaciones públicas'],
+  ['CAMPAIGN', 'Campaña'],
+  ['WEBSITE', 'Sitio web'],
+  ['OTHER', 'Otro']
+];
+
 /** Opportunity.aging_status. The API returns these three strings verbatim. */
 export const AGING_TONE = { green: 'slate', yellow: 'clay', red: 'rust' };
 export const AGING_LABEL = { green: 'On pace', yellow: 'Past expected', red: 'Stalled' };

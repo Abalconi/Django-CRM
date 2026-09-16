@@ -15,8 +15,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 // API Base URL from environment variables
 // Note: VITE_ prefix is required for client-side env vars
-const API_BASE_URL = env.PUBLIC_DJANGO_API_URL
-  ? `${env.PUBLIC_DJANGO_API_URL}/api`
+const apiOrigin = env.PUBLIC_DJANGO_API_BROWSER_URL || env.PUBLIC_DJANGO_API_URL;
+const API_BASE_URL = apiOrigin
+  ? `${apiOrigin}/api`
   : 'http://localhost:8000/api';
 
 /**

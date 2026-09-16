@@ -38,7 +38,7 @@ import { getTags } from '$lib/server/v2/tags.js';
  */
 export async function load(event) {
   const { cookies, url, locals } = event;
-  const view = url.searchParams.get('view') === 'board' ? 'board' : 'list';
+  const view = url.searchParams.get('view') === 'list' ? 'list' : 'board';
   const boardMode = view === 'board';
 
   const filters = readFilters(url, 'pipeline');

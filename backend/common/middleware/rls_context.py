@@ -121,6 +121,7 @@ class RequireOrgContext:
         "/api/org/",
         "/admin/",
         "/swagger-ui/",
+        "/schema/",
         "/api/schema/",
         # Public CSAT survey link (Tier 2 csat). Anonymous, sets RLS
         # context manually inside the view from the survey's own org_id.

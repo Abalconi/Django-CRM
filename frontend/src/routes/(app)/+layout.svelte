@@ -8,11 +8,22 @@
   import Sidebar from '$lib/v2/components/Sidebar.svelte';
   import CommandPalette from '$lib/v2/components/CommandPalette.svelte';
   import { Search, Sun, Columns3, LifeBuoy, Receipt, Plus, Menu } from '@lucide/svelte';
+  import { getLanguage, tr } from '$lib/i18n.js';
+  import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+  import GlobalTranslator from '$lib/components/GlobalTranslator.svelte';
 
   /** @type {{ data: { counts: Record<string, number>, org: { name: string, terminology?: Record<string, string> | null }, role: string }, children: import('svelte').Snippet }} */
   let { data, children } = $props();
 
   let paletteOpen = $state(false);
+  let language = $state('es');
+
+  $effect(() => {
+    language = getLanguage();
+    const onLanguage = (event) => (language = event.detail);
+    window.addEventListener('bottlecrm-language', onLanguage);
+    return () => window.removeEventListener('bottlecrm-language', onLanguage);
+  });
 
   // The sidebar is hidden below 768px, and the tab bar only carries four of the
   // ~16 destinations. This drawer is how a phone reaches the rest of the nav and
@@ -31,10 +42,10 @@
    * purpose. A tab bar that scrolls is a menu wearing a tab bar's clothes.
    */
   const TABS = [
-    { href: '/', label: 'Today', icon: Sun, exact: true },
-    { href: '/pipeline', label: 'Pipeline', icon: Columns3 },
-    { href: '/tickets', label: 'Tickets', icon: LifeBuoy },
-    { href: '/invoices', label: 'Invoices', icon: Receipt }
+    { href: '/', key: 'today', icon: Sun, exact: true },
+    { href: '/pipeline', key: 'pipeline', icon: Columns3 },
+    { href: '/tickets', key: 'tickets', icon: LifeBuoy },
+    { href: '/invoices', key: 'invoices', icon: Receipt }
   ];
 
   const isActive = (href, exact) =>
@@ -58,11 +69,13 @@
 <svelte:window {onkeydown} />
 
 <div class="v2-root v2-shell">
+  <GlobalTranslator />
   <Sidebar
     counts={data.counts}
     org={data.org}
     role={data.role}
     terminology={data.org.terminology}
+    {language}
     onsearch={() => (paletteOpen = true)}
   />
   <div class="v2-main">
@@ -80,6 +93,7 @@
       </button>
       <span class="v2-mark">{data.org.name.slice(0, 1)}</span>
       <h2>{data.org.name}</h2>
+      <LanguageSelector />
       <button
         class="v2-btn v2-btn-quiet"
         type="button"
@@ -100,7 +114,7 @@
           aria-current={isActive(tab.href, tab.exact) ? 'page' : undefined}
         >
           <tab.icon />
-          {tab.label}
+          {tr(language, tab.key)}
         </a>
       {/each}
     </nav>
@@ -108,7 +122,7 @@
 
   <!-- Both live inside .v2-root so they inherit the scoped tokens; both are
        position:fixed, so the shell's overflow:hidden does not clip them. -->
-  <a class="v2-fab" href={resolve('/pipeline/new')} aria-label="New deal"><Plus size={21} /></a>
+  <a class="v2-fab" href={resolve('/pipeline/new')} aria-label={tr(language, 'newDeal')}><Plus size={21} /></a>
 
   <!-- Mobile navigation drawer. Only openable from the mobile top bar, so it
        never surfaces on desktop; a backdrop click, Escape, or navigating all
@@ -125,7 +139,7 @@
         class="v2-drawer"
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation"
+        aria-label={tr(language, 'navigation')}
         tabindex="-1"
         use:autofocus
         onkeydown={(e) => {
@@ -140,6 +154,7 @@
           org={data.org}
           role={data.role}
           terminology={data.org.terminology}
+          {language}
           onsearch={() => {
             menuOpen = false;
             paletteOpen = true;

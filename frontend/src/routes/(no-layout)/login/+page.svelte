@@ -7,6 +7,8 @@
   import imgGoogle from '$lib/assets/images/google.svg';
   import imgLogo from '$lib/assets/images/logo.png';
   import { Mail, Check } from '@lucide/svelte';
+  import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+  import { getLanguage, tr } from '$lib/i18n.js';
 
   let { data = {} } = $props();
 
@@ -15,6 +17,14 @@
   let magicLinkSent = $state(false);
   let isSendingLink = $state(false);
   let magicLinkError = $state('');
+  let language = $state('es');
+
+  $effect(() => {
+    language = getLanguage();
+    const onLanguage = (event) => (language = event.detail);
+    window.addEventListener('bottlecrm-language', onLanguage);
+    return () => window.removeEventListener('bottlecrm-language', onLanguage);
+  });
 
   function handleGoogleLogin() {
     isLoading = true;
@@ -53,8 +63,8 @@
 
     <div class="v2-auth-card">
       <div class="v2-auth-head">
-        <h1>Sign in</h1>
-        <p>Welcome back. Choose how you'd like to continue.</p>
+        <h1>{tr(language, 'signIn')}</h1>
+        <p>{tr(language, 'welcomeBack')}</p>
       </div>
 
       <!-- Primary path. Google's mark keeps a white tile so it stays legible on
@@ -69,22 +79,22 @@
       >
         {#if isLoading}
           <span class="v2-spin"></span>
-          <span>Redirecting…</span>
+          <span>{tr(language, 'redirecting')}</span>
         {:else}
           <img src={imgGoogle} alt="" class="v2-auth-gicon" />
-          <span>Continue with Google</span>
+          <span>{tr(language, 'continueGoogle')}</span>
         {/if}
       </a>
 
-      <div class="v2-auth-divider">or</div>
+      <div class="v2-auth-divider">{tr(language, 'or')}</div>
 
       {#if magicLinkSent}
         <div class="v2-auth-note v2-auth-note-ok">
           <Check />
           <div>
-            <b>Check your email.</b>
+            <b>{tr(language, 'checkEmail')}</b>
             <div style="font-weight:400;margin-top:2px">
-              We sent a sign-in link. It expires in 10 minutes.
+              {tr(language, 'linkSent')}
             </div>
           </div>
         </div>
@@ -94,13 +104,13 @@
           use:enhance={handleMagicLink}
           style="display:flex;flex-direction:column;gap:9px"
         >
-          <label for="email" class="v2-sr-only">Email address</label>
+          <label for="email" class="v2-sr-only">{tr(language, 'emailAddress')}</label>
           <input
             id="email"
             type="email"
             name="email"
             class="v2-input"
-            placeholder="you@company.com"
+            placeholder="tu@empresa.com"
             required
             bind:value={email}
             disabled={isSendingLink}
@@ -108,10 +118,10 @@
           <button type="submit" class="v2-btn v2-btn-block" disabled={isSendingLink}>
             {#if isSendingLink}
               <span class="v2-spin"></span>
-              <span>Sending…</span>
+              <span>{tr(language, 'sending')}</span>
             {:else}
               <Mail size={15} />
-              <span>Continue with email</span>
+              <span>{tr(language, 'continueEmail')}</span>
             {/if}
           </button>
         </form>
@@ -124,13 +134,14 @@
     </div>
 
     <p class="v2-sub" style="text-align:center;margin:14px 0 0">
-      New here? Enter your email above to get started.
+      {tr(language, 'newHere')}
     </p>
 
     <div class="v2-auth-foot">
-      <a href="https://bottlecrm.io/privacy-policy">Privacy</a>
+      <LanguageSelector />
+      <a href="https://bottlecrm.io/privacy-policy">{tr(language, 'privacy')}</a>
       <span class="v2-auth-dot"></span>
-      <a href="https://bottlecrm.io/terms">Terms</a>
+      <a href="https://bottlecrm.io/terms">{tr(language, 'terms')}</a>
       <span class="v2-auth-dot"></span>
       <a href="https://github.com/django-crm/Django-CRM" target="_blank" rel="noopener">GitHub</a>
     </div>

@@ -25,6 +25,8 @@
     LogOut
   } from '@lucide/svelte';
   import { t } from '$lib/terminology.js';
+  import { tr } from '$lib/i18n.js';
+  import LanguageSelector from '$lib/components/LanguageSelector.svelte';
 
   /**
    * One flat tree, grouped by what the person is doing rather than by which
@@ -52,6 +54,7 @@
    *   org?: { name: string },
    *   role?: string,
    *   terminology?: Record<string, string> | null,
+  *   language?: string,
    *   onsearch?: () => void
    * }}
    */
@@ -60,50 +63,53 @@
     org = { name: 'BottleCRM' },
     role = 'USER',
     terminology = undefined,
+    language = 'es',
     onsearch = () => {}
   } = $props();
 
   const GROUPS = [
     {
-      label: 'Sell',
+      key: 'sell',
       items: [
-        { href: '/', label: 'Today', icon: Sun, exact: true },
+        { href: '/', label: 'Today', key: 'today', icon: Sun, exact: true },
         {
           href: '/pipeline',
           label: 'Pipeline',
+          key: 'pipeline',
           icon: Columns3,
           count: 'pipeline',
           termKey: 'opportunity.plural'
         },
-        { href: '/leads', label: 'Leads', icon: Target, count: 'leads', termKey: 'lead.plural' },
-        { href: '/accounts', label: 'Accounts', icon: Building2, termKey: 'account.plural' },
-        { href: '/contacts', label: 'Contacts', icon: Users, termKey: 'contact.plural' },
-        { href: '/goals', label: 'Goals', icon: Trophy }
+        { href: '/leads', label: 'Leads', key: 'leads', icon: Target, count: 'leads', termKey: 'lead.plural' },
+        { href: '/accounts', label: 'Accounts', key: 'accounts', icon: Building2, termKey: 'account.plural' },
+        { href: '/contacts', label: 'Contacts', key: 'contacts', icon: Users, termKey: 'contact.plural' },
+        { href: '/goals', label: 'Goals', key: 'goals', icon: Trophy }
       ]
     },
     {
-      label: 'Serve',
+      key: 'serve',
       items: [
-        { href: '/tasks', label: 'Tasks', icon: CircleCheck, count: 'tasks' },
+        { href: '/tasks', label: 'Tasks', key: 'tasks', icon: CircleCheck, count: 'tasks' },
         // Approvals and Analytics live under Tickets as section tabs. They are
         // not separate destinations, so they do not get separate nav entries,
         // one level of navigation, and the tab strip carries the rest.
-        { href: '/tickets', label: 'Tickets', icon: LifeBuoy, count: 'tickets' },
-        { href: '/solutions', label: 'Knowledge base', icon: BookOpen },
-        { href: '/documents', label: 'Documents', icon: FileText }
+        { href: '/tickets', label: 'Tickets', key: 'tickets', icon: LifeBuoy, count: 'tickets' },
+        { href: '/solutions', label: 'Knowledge base', key: 'knowledgeBase', icon: BookOpen },
+        { href: '/documents', label: 'Documents', key: 'documents', icon: FileText }
       ]
     },
     {
-      label: 'Bill',
+      key: 'bill',
       items: [
         {
           href: '/invoices',
           label: 'Invoices',
+          key: 'invoices',
           icon: Receipt,
           count: 'invoices',
           termKey: 'invoice.plural'
         },
-        { href: '/timesheet', label: 'Timesheet', icon: Clock }
+        { href: '/timesheet', label: 'Timesheet', key: 'timesheet', icon: Clock }
       ]
     },
     {
@@ -113,10 +119,10 @@
       // Team is admin-only. A member reaches it only to be told so. Settings
       // is not: the hub is readable by any member (it just omits admin-only
       // counts), so it stays for everyone.
-      label: 'Run',
+      key: 'run',
       items: [
-        { href: '/team', label: 'Team and access', icon: UserCog, admin: true },
-        { href: '/settings', label: 'Settings', icon: SlidersHorizontal }
+        { href: '/team', label: 'Team and access', key: 'teamAccess', icon: UserCog, admin: true },
+        { href: '/settings', label: 'Settings', key: 'settings', icon: SlidersHorizontal }
       ]
     }
   ];
@@ -126,11 +132,15 @@
   let groups = $derived(
     GROUPS.map((group) => ({
       ...group,
+      label: tr(language, group.key),
       items: group.items
         .filter((item) => role === 'ADMIN' || !item.admin)
-        .map((item) =>
-          item.termKey ? { ...item, label: t(terminology, item.termKey, item.label) } : item
-        )
+        .map((item) => ({
+            ...item,
+            label: item.termKey
+              ? t(terminology, item.termKey, tr(language, item.key))
+              : tr(language, item.key)
+          }))
     })).filter((group) => group.items.length > 0)
   );
 
@@ -143,6 +153,7 @@
     <span class="v2-mark">{org.name.slice(0, 1)}</span>
     <b>{org.name}</b>
   </div>
+  <LanguageSelector />
 
   <!--
     No entry appears here without a route behind it. v1's "Deals" pointed at
@@ -169,7 +180,7 @@
   <div class="v2-nav-foot">
     <button class="v2-link v2-nav-search" type="button" onclick={onsearch}>
       <Search />
-      Search
+      {tr(language, 'search')}
       <span class="v2-count">⌘K</span>
     </button>
     <!-- Personal, not work: your own feed sits with your own profile rather
@@ -180,18 +191,18 @@
       aria-current={isActive('/notifications', false) ? 'page' : undefined}
     >
       <Bell />
-      Notifications
+      {tr(language, 'notifications')}
       {#if counts.notifications}
         <span class="v2-count">{counts.notifications}</span>
       {/if}
     </a>
     <a class="v2-link" href={resolve('/profile')}>
       <CircleUser />
-      Your profile
+      {tr(language, 'profile')}
     </a>
     <a class="v2-link" href={resolve('/help')}>
       <CircleHelp />
-      Help
+      {tr(language, 'help')}
     </a>
     <!-- The phone app for people on the hosted service. No pulsing dot. A
          download link is not something that needs you right now, and v2 keeps
@@ -203,14 +214,14 @@
       rel="noopener noreferrer"
     >
       <Smartphone />
-      Download app
+      {tr(language, 'downloadApp')}
     </a>
     <!-- Leaving the app. Last in the list, and a plain link. /logout is a
          server load that clears the auth cookies and redirects to /login, so a
          GET navigation is all it takes and no data-fetching component follows. -->
     <a class="v2-link" href={resolve('/logout')} data-sveltekit-reload>
       <LogOut />
-      Sign out
+      {tr(language, 'signOut')}
     </a>
   </div>
 </nav>
