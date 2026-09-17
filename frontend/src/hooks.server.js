@@ -13,9 +13,10 @@ import * as Sentry from '@sentry/sveltekit';
 import { redirect } from '@sveltejs/kit';
 import axios from 'axios';
 import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
 import { describeError } from '$lib/server/log-safe.js';
 
-const API_BASE_URL = `${env.PUBLIC_DJANGO_API_URL}/api`;
+const API_BASE_URL = `${privateEnv.PRIVATE_DJANGO_API_URL || env.PUBLIC_DJANGO_API_URL}/api`;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**

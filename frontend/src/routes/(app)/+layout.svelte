@@ -43,7 +43,7 @@
    */
   const TABS = [
     { href: '/', key: 'today', icon: Sun, exact: true },
-    { href: '/pipeline', key: 'pipeline', icon: Columns3 },
+    { href: '/pipeline?view=board', key: 'pipeline', icon: Columns3 },
     { href: '/tickets', key: 'tickets', icon: LifeBuoy },
     { href: '/invoices', key: 'invoices', icon: Receipt }
   ];

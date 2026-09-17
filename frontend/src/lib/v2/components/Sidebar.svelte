@@ -73,7 +73,7 @@
       items: [
         { href: '/', label: 'Today', key: 'today', icon: Sun, exact: true },
         {
-          href: '/pipeline',
+          href: '/pipeline?view=board',
           label: 'Pipeline',
           key: 'pipeline',
           icon: Columns3,

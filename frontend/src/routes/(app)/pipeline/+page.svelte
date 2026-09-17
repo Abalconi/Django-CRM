@@ -11,7 +11,7 @@
   import EmptyState from '$lib/v2/components/EmptyState.svelte';
   import { money, count, shortDate } from '$lib/v2/format.js';
   import { STAGE_LABEL, AGING_TONE, AGING_LABEL } from '$lib/v2/enums.js';
-  import { activeChips, activePresetKey, withoutParam } from '$lib/v2/filters.js';
+  import { activeChips, activePresetKey } from '$lib/v2/filters.js';
   import { Columns3, List, Plus, TriangleAlert } from '@lucide/svelte';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
@@ -133,7 +133,11 @@
    * dropped, and it is visible rather than silent, since the chips for them
    * disappear along with the params.
    */
-  let listHref = $derived(withoutParam(page.url, 'view'));
+  let listHref = $derived.by(() => {
+    const next = new SvelteURLSearchParams(page.url.searchParams);
+    next.set('view', 'list');
+    return `/pipeline?${next}`;
+  });
   let boardHref = $derived.by(() => {
     const next = new SvelteURLSearchParams();
     next.set('view', 'board');
